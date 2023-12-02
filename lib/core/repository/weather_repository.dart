@@ -1,56 +1,65 @@
-import 'package:weather_app/core/service/api_client.dart';
-import 'package:weather_app/core/service/models/weather.dart' hide Weather;
+import 'package:weather_app/core/service/weather_client.dart';
 
 import 'models/weather.dart';
 
 class WeatherFailure implements Exception {}
 
 class WeatherRepository {
-  WeatherRepository({APIClient? apiClient})
-      : _apiClient = apiClient ?? APIClient();
+  WeatherRepository({WeatherClient? apiClient})
+      : _apiClient = apiClient ?? WeatherClient();
 
-  final APIClient _apiClient;
+  final WeatherClient _apiClient;
 
-  Future<List<Weather>> getWeather(String city) async {
-    final List<Weather> weather = [];
+  Future<Weather> getWeather(String city) async {
     final location = await _apiClient.locationSearch(city);
-    final woeid = location.woeid;
-    final weathers = await _apiClient.getWeather(woeid);
-    for (var item in weathers) {
-      weather.add(Weather(
-          temperature: item.theTemp,
-          location: location.title,
-          condition: item.weatherStateName,
-          airPressure: item.airPressure,
-          humidity: item.humidity,
-          maxTemp: item.maxTemp,
-          minTemp: item.minTemp,
-          weatherStateAbr: item.weatherStateAbbr.abbr!,
-          windDirection: item.windDirection,
-          windSpeed: item.windSpeed,
-          applicableDate: item.applicableDate));
-    }
-    return weather;
+    final weather = await _apiClient.getWeather(
+      latitude: location.latitude,
+      longitude: location.longitude,
+    );
+
+    return Weather(
+      condition: weather.weatherCode.toInt().toCondition,
+      location: location.name,
+      temperature: weather.temperature,
+    );
   }
 }
 
-extension on WeatherState {
+extension on int {
   WeatherCondition get toCondition {
     switch (this) {
-      case WeatherState.clear:
+      case 0:
         return WeatherCondition.clear;
-      case WeatherState.snow:
-      case WeatherState.sleet:
-      case WeatherState.hail:
-        return WeatherCondition.snowy;
-      case WeatherState.thunderstorm:
-      case WeatherState.heavyRain:
-      case WeatherState.lightRain:
-      case WeatherState.showers:
-        return WeatherCondition.rainy;
-      case WeatherState.heavyCloud:
-      case WeatherState.lightCloud:
+      case 1:
+      case 2:
+      case 3:
+      case 45:
+      case 48:
         return WeatherCondition.cloudy;
+      case 51:
+      case 53:
+      case 55:
+      case 56:
+      case 57:
+      case 61:
+      case 63:
+      case 65:
+      case 66:
+      case 67:
+      case 80:
+      case 81:
+      case 82:
+      case 95:
+      case 96:
+      case 99:
+        return WeatherCondition.rainy;
+      case 71:
+      case 73:
+      case 75:
+      case 77:
+      case 85:
+      case 86:
+        return WeatherCondition.snowy;
       default:
         return WeatherCondition.unknown;
     }

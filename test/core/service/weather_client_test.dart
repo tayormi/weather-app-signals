@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-import 'package:weather_app/core/service/api_client.dart';
+import 'package:weather_app/core/service/weather_client.dart';
 import 'package:weather_app/core/service/models/location.dart';
 
 class MockDioClient extends Mock implements Dio {}
@@ -11,16 +11,16 @@ class MockResponse extends Mock implements Response {}
 void main() {
   group('Api client', () {
     late Dio dio;
-    late APIClient apiClient;
+    late WeatherClient apiClient;
 
     setUp(() {
       dio = MockDioClient();
-      apiClient = APIClient(dio: dio);
+      apiClient = WeatherClient(dio: dio);
     });
 
     group('constructor', () {
       test('does not require an dio', () {
-        expect(APIClient(), isNotNull);
+        expect(WeatherClient(), isNotNull);
       });
     });
 
@@ -66,28 +66,26 @@ void main() {
         final response = MockResponse();
         when(() => response.statusCode).thenReturn(200);
         when(() => response.data).thenReturn(
-          '''[{
-            "title": "mock-title",
-            "location_type": "City",
-            "latt_long": "-34.75,83.28",
-            "woeid": 42
-          }]''',
+          '''{
+  "results": [
+    {
+      "id": 4887398,
+      "name": "Chicago",
+      "latitude": 41.85003,
+      "longitude": -87.65005
+    }
+  ]
+}''',
         );
         when(() => dio.get(any())).thenAnswer((_) async => response);
         final actual = await apiClient.locationSearch(query);
         expect(
           actual,
           isA<Location>()
-              .having((l) => l.title, 'title', 'mock-title')
-              .having((l) => l.locationType, 'type', LocationType.city)
-              .having(
-                (l) => l.latLng,
-                'latLng',
-                isA<LatLng>()
-                    .having((c) => c.latitude, 'latitude', -34.75)
-                    .having((c) => c.longitude, 'longitude', 83.28),
-              )
-              .having((l) => l.woeid, 'woeid', 42),
+              .having((l) => l.name, 'name', 'Chicago')
+              .having((l) => l.id, 'id', 4887398)
+              .having((l) => l.latitude, 'latitude', 41.85003)
+              .having((l) => l.longitude, 'longitude', -87.65005),
         );
       });
     });

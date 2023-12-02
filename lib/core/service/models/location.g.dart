@@ -6,61 +6,23 @@ part of 'location.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Location _$LocationFromJson(Map<String, dynamic> json) {
-  return $checkedNew('Location', json, () {
-    final val = Location(
-      title: $checkedConvert(json, 'title', (v) => v as String),
-      locationType: $checkedConvert(
-          json, 'location_type', (v) => _$enumDecode(_$LocationTypeEnumMap, v)),
-      latLng: $checkedConvert(json, 'latt_long',
-          (v) => const LatLngConverter().fromJson(v as String)),
-      woeid: $checkedConvert(json, 'woeid', (v) => v as int),
+Location _$LocationFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'Location',
+      json,
+      ($checkedConvert) {
+        final val = Location(
+          id: $checkedConvert('id', (v) => v as int),
+          name: $checkedConvert('name', (v) => v as String),
+          latitude: $checkedConvert('latitude', (v) => (v as num).toDouble()),
+          longitude: $checkedConvert('longitude', (v) => (v as num).toDouble()),
+        );
+        return val;
+      },
     );
-    return val;
-  }, fieldKeyMap: const {
-    'locationType': 'location_type',
-    'latLng': 'latt_long'
-  });
-}
 
 Map<String, dynamic> _$LocationToJson(Location instance) => <String, dynamic>{
-      'title': instance.title,
-      'location_type': _$LocationTypeEnumMap[instance.locationType],
-      'latt_long': const LatLngConverter().toJson(instance.latLng),
-      'woeid': instance.woeid,
+      'id': instance.id,
+      'name': instance.name,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-const _$LocationTypeEnumMap = {
-  LocationType.city: 'City',
-  LocationType.region: 'Region',
-  LocationType.state: 'State',
-  LocationType.province: 'Province',
-  LocationType.country: 'Country',
-  LocationType.continent: 'Continent',
-};

@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
+import 'package:weather_app/core/repository/models/weather.dart' hide Weather;
 import 'package:weather_app/presentation/models/weather.dart';
-import 'package:weather_app/presentation/providers/weather_provider.dart';
 
-class WeatherAvailable extends HookConsumerWidget {
-  const WeatherAvailable(
-      {Key? key,
-      required this.onRefresh,
-      required this.weather,
-      required this.weatherDetails,
-      required this.units})
-      : super(key: key);
+class WeatherAvailable extends StatelessWidget {
+  const WeatherAvailable({
+    super.key,
+    required this.onRefresh,
+    required this.weather,
+    required this.units,
+  });
 
-  final List<Weather> weather;
-  final Weather weatherDetails;
+  final Weather weather;
   final ValueGetter<Future<void>> onRefresh;
   final TemperatureUnits units;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         _WeatherBackground(),
@@ -36,12 +32,10 @@ class WeatherAvailable extends HookConsumerWidget {
                         ? PortraitView(
                             units: units,
                             weather: weather,
-                            weatherDetails: weatherDetails,
                           )
                         : LandScapeView(
                             units: units,
                             weather: weather,
-                            weatherDetails: weatherDetails,
                           ),
               ),
             ),
@@ -53,15 +47,13 @@ class WeatherAvailable extends HookConsumerWidget {
 }
 
 class LandScapeView extends HookConsumerWidget {
-  const LandScapeView(
-      {Key? key,
-      required this.weather,
-      required this.weatherDetails,
-      required this.units})
-      : super(key: key);
+  const LandScapeView({
+    super.key,
+    required this.weather,
+    required this.units,
+  });
 
-  final List<Weather> weather;
-  final Weather weatherDetails;
+  final Weather weather;
   final TemperatureUnits units;
 
   @override
@@ -70,23 +62,8 @@ class LandScapeView extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Align(
-          alignment: Alignment.center,
-          child: Text(
-            DateFormat(DateFormat.WEEKDAY)
-                .format(weatherDetails.date)
-                .toUpperCase(),
-            style: theme.textTheme.headline2?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
         Text(
-          weatherDetails.condition.toString(),
+          weather.condition.toString(),
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(
@@ -94,113 +71,45 @@ class LandScapeView extends HookConsumerWidget {
         ),
         Align(
           alignment: Alignment.center,
-          child: SvgPicture.network(
-            'https://www.metaweather.com/static/img/weather/${weatherDetails.weatherStateAbr}.svg',
-            height: 100,
-            width: 100,
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Align(
-          alignment: Alignment.center,
           child: Text(
-            weatherDetails.formattedTemperature(units),
-            style: theme.textTheme.headline2?.copyWith(
+            weather.formattedTemperature(units),
+            style: theme.textTheme.displayMedium?.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 80,
             ),
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          'Humidity: ${weatherDetails.humidity}%',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          'Pressure: ${weatherDetails.airPressure} hPa',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          'Wind: ${weatherDetails.windSpeed.toStringAsPrecision(2)} km/h',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          height: 140,
-          child: ListView.separated(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (BuildContext context, int index) {
-              return WeatherItem(
-                weather: weather[index],
-                onTap: () async {
-                  ref
-                      .read(weatherNotifierProvider.notifier)
-                      .setWeatherDetails(weather[index]);
-                },
-                units: units,
-              );
-            },
-            itemCount: weather.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(
-                width: 10,
-              );
-            },
-          ),
-        )
       ],
     );
   }
 }
 
-class PortraitView extends HookConsumerWidget {
-  const PortraitView(
-      {Key? key,
-      required this.weather,
-      required this.weatherDetails,
-      required this.units})
-      : super(key: key);
+class PortraitView extends StatelessWidget {
+  const PortraitView({
+    super.key,
+    required this.weather,
+    required this.units,
+  });
 
-  final List<Weather> weather;
-  final Weather weatherDetails;
+  final Weather weather;
   final TemperatureUnits units;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Align(
-          alignment: Alignment.center,
-          child: Text(
-            DateFormat(DateFormat.WEEKDAY)
-                .format(weatherDetails.date)
-                .toUpperCase(),
-            style: theme.textTheme.headline2?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
+        const SizedBox(height: 48),
+        _WeatherIcon(condition: weather.condition),
+        Text(
+          weather.location,
+          style: theme.textTheme.displayMedium?.copyWith(
+            fontWeight: FontWeight.w200,
           ),
         ),
-        const SizedBox(
-          height: 20,
-        ),
         Text(
-          weatherDetails.condition.toString(),
+          weather.condition.toEmoji,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(
@@ -208,73 +117,14 @@ class PortraitView extends HookConsumerWidget {
         ),
         Align(
           alignment: Alignment.center,
-          child: SvgPicture.network(
-            'https://www.metaweather.com/static/img/weather/${weatherDetails.weatherStateAbr}.svg',
-            height: 100,
-            width: 100,
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Align(
-          alignment: Alignment.center,
           child: Text(
-            weatherDetails.formattedTemperature(units),
-            style: theme.textTheme.headline2?.copyWith(
+            weather.formattedTemperature(units),
+            style: theme.textTheme.displayMedium?.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 80,
             ),
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          'Humidity: ${weatherDetails.humidity}%',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          'Pressure: ${weatherDetails.airPressure} hPa',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          'Wind: ${weatherDetails.windSpeed.toStringAsPrecision(2)} km/h',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-          height: 140,
-          child: ListView.separated(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (BuildContext context, int index) {
-              return WeatherItem(
-                weather: weather[index],
-                onTap: () async {
-                  ref
-                      .read(weatherNotifierProvider.notifier)
-                      .setWeatherDetails(weather[index]);
-                },
-                units: units,
-              );
-            },
-            itemCount: weather.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(
-                width: 10,
-              );
-            },
-          ),
-        )
       ],
     );
   }
@@ -321,72 +171,35 @@ extension on Weather {
   }
 }
 
-extension on Temperature {
-  String formattedTemperatureItem(TemperatureUnits units) {
-    return '''${value.toStringAsPrecision(2)}°${units.isCelsius ? 'C' : 'F'}''';
+class _WeatherIcon extends StatelessWidget {
+  const _WeatherIcon({required this.condition});
+
+  static const _iconSize = 75.0;
+
+  final WeatherCondition condition;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      condition.toEmoji,
+      style: const TextStyle(fontSize: _iconSize),
+    );
   }
 }
 
-class WeatherItem extends StatelessWidget {
-  const WeatherItem(
-      {Key? key,
-      required this.weather,
-      required this.onTap,
-      required this.units})
-      : super(key: key);
-
-  final Weather weather;
-  final ValueGetter<Future<void>> onTap;
-  final TemperatureUnits units;
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        // height: 100,
-        width: 120,
-        decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: BorderRadius.circular(5)),
-
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Text(
-                DateFormat(DateFormat.ABBR_WEEKDAY)
-                    .format(weather.date)
-                    .toUpperCase(),
-                style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: SvgPicture.network(
-                  'https://www.metaweather.com/static/img/weather/${weather.weatherStateAbr}.svg',
-                  height: 50,
-                  width: 50,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                '${weather.minTemp.formattedTemperatureItem(units)}/${weather.maxTemp.formattedTemperatureItem(units)}',
-                style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+extension on WeatherCondition {
+  String get toEmoji {
+    switch (this) {
+      case WeatherCondition.clear:
+        return '☀️';
+      case WeatherCondition.rainy:
+        return '🌧️';
+      case WeatherCondition.cloudy:
+        return '☁️';
+      case WeatherCondition.snowy:
+        return '🌨️';
+      case WeatherCondition.unknown:
+        return '❓';
+    }
   }
 }

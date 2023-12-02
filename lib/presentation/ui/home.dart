@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:signals/signals_flutter.dart';
 import 'package:weather_app/presentation/city_search.dart';
-import 'package:weather_app/presentation/providers/weather_provider.dart';
-import 'package:weather_app/presentation/providers/weather_state.dart';
+import 'package:weather_app/presentation/stores/weather_state.dart';
+import 'package:weather_app/presentation/stores/weather_store.dart';
 import 'package:weather_app/presentation/ui/setting_screen.dart';
 import 'package:weather_app/presentation/ui/widgets/weather_available.dart';
 
@@ -13,7 +13,7 @@ import 'widgets/weather_error.dart';
 import 'widgets/weather_loading.dart';
 
 class HomeScreen extends HookConsumerWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,8 +26,11 @@ class HomeScreen extends HookConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: InkWell(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => const SettingsScreen())),
+                  onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SettingsScreen(),
+                        ),
+                      ),
                   child: const Icon(Icons.settings)),
             ),
             Padding(
@@ -38,9 +41,7 @@ class HomeScreen extends HookConsumerWidget {
                         MaterialPageRoute(
                             builder: (_) => const CitySearchScreen()));
                     xCity.value = city;
-                    ref
-                        .read(weatherNotifierProvider.notifier)
-                        .fetchWeather(city);
+                    weatherStore.fetchWeather(xCity.value);
                   },
                   child: const Icon(Icons.search)),
             )
@@ -52,13 +53,12 @@ class HomeScreen extends HookConsumerWidget {
             final city = await Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const CitySearchScreen()));
             xCity.value = city;
-            ref.read(weatherNotifierProvider.notifier).fetchWeather(city);
+            weatherStore.fetchWeather(xCity.value);
           },
         ),
         body: Center(
-          child:
-              Consumer(builder: (BuildContext context, watch, Widget? child) {
-            final state = ref.watch(weatherNotifierProvider);
+          child: Watch((BuildContext context) {
+            final state = weatherStore.weatherState;
             switch (state.status) {
               case WeatherStatus.initial:
                 return const WeatherEmpty();
@@ -67,21 +67,16 @@ class HomeScreen extends HookConsumerWidget {
               case WeatherStatus.success:
                 return WeatherAvailable(
                   onRefresh: () {
-                    return ref
-                        .read(weatherNotifierProvider.notifier)
-                        .refreshWeather();
+                    return weatherStore.refreshWeather();
                   },
-                  weather: state.weathers,
+                  weather: state.weather,
                   units: state.temperatureUnits,
-                  weatherDetails: state.weatherDetails,
                 );
               case WeatherStatus.failure:
               default:
                 return WeatherError(
                   onPressed: () {
-                    ref
-                        .read(weatherNotifierProvider.notifier)
-                        .fetchWeather(xCity.value);
+                    weatherStore.fetchWeather(xCity.value);
                   },
                 );
             }
