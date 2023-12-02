@@ -1,10 +1,10 @@
-# 📈Weather App built with Riverpod
+# 📈Weather App built with Signals
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![Twitter Follow](https://img.shields.io/twitter/follow/olu_tayormi?label=Follow&style=social)](https://twitter.com/olu_tayormi)
 
-This is a weather app built using Riverpod as it's State Management. This project is an attempt to rewrite the Weather App sample at [Flutter Bloc Example](https://bloclibrary.dev/#/flutterweathertutorial) created by [Felix Angelov](https://github.com/felangel) in Riverpod.
+This is a weather app built using [Signal](https://rodydavis.github.io/signals.dart/reference/overview/) as it's State Management. This project is an attempt to rewrite the Weather App sample at [Flutter Bloc Example](https://bloclibrary.dev/#/flutterweathertutorial) created by [Felix Angelov](https://github.com/felangel) in Signals.
 
-The [Meta Weather API](https://www.metaweather.com) was used to provide the data.
+The [Open Meteo](https://open-meteo.com/) was used to provide the data.
 This project was created for educational purposes only and it's not intended to be a reference point to get weather data.
 
 ## 💻 Requirements
@@ -17,7 +17,6 @@ This project was created for educational purposes only and it's not intended to 
 ## ✨ Features
 
 * [x] See weather forecast for a location.
-* [x] See next 5 days of forecast.
 * [x] Change temperature.
 
 ## 📸 Screenshots
@@ -40,7 +39,7 @@ This project was created for educational purposes only and it's not intended to 
 
 | Name | Usage |
 |:------:|:-------:|
-|[**riverpod**](https://pub.dev/packages/riverpod)| State Management|
+|[**signals**](https://pub.dev/packages/signals)| State Management|
 |[**DIO**](https://pub.dev/packages/dio)| Network calls|
 |[**FlexColorScheme**](https://pub.dev/packages/flex_color_scheme)| App Theming|
 |[**Flutter Hooks**](https://pub.dev/packages/flutter_hooks)| A Flutter implementation of React hooks|
