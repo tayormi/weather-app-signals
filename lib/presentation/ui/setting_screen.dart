@@ -8,19 +8,21 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final state = ref.watch(weatherNotifierProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: ListTile(
-        title: const Text('Temperature Units'),
-        trailing: Watch((context) {
-          final state = weatherStore.weatherState;
-          return Switch(
-            value: state.temperatureUnits.isCelsius,
-            onChanged: (_) {},
-          );
-        }),
-      ),
+      body: Watch((context) {
+        return ListTile(
+          title: const Text('Temperature Units'),
+          isThreeLine: true,
+          subtitle: const Text(
+            'Use metric measurements for temperature units.',
+          ),
+          trailing: Switch(
+            value: weatherStore.weatherState.temperatureUnits.isCelsius,
+            onChanged: (_) => weatherStore.toggleTemperatureUnits(),
+          ),
+        );
+      }),
     );
   }
 }

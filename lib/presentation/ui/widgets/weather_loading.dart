@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class WeatherLoading extends StatelessWidget {
-  const WeatherLoading({Key? key}) : super(key: key);
+  const WeatherLoading({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class WeatherLoading extends StatelessWidget {
         const Text('⛅', style: TextStyle(fontSize: 64)),
         Text(
           'Loading Weather',
-          style: theme.textTheme.headline5,
+          style: theme.textTheme.headlineSmall,
         ),
         const Padding(
           padding: EdgeInsets.all(16.0),

@@ -11,7 +11,7 @@ import 'widgets/weather_empty.dart';
 import 'widgets/weather_error.dart';
 import 'widgets/weather_loading.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends HookWidget {
   const HomeScreen({super.key});
 
   @override

@@ -38,7 +38,7 @@ class WeatherStore {
         status: WeatherStatus.success,
         temperatureUnits: units,
       );
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       _weatherState.value = _weatherState.value.copyWith(
         status: WeatherStatus.failure,
       );
@@ -70,14 +70,13 @@ class WeatherStore {
   }
 
   void toggleTemperatureUnits() {
-    final units = _weatherState.value.temperatureUnits;
-    final value = units.isFahrenheit
+    final units = weatherState.temperatureUnits.isFahrenheit
         ? TemperatureUnits.celsius
         : TemperatureUnits.fahrenheit;
 
     if (!weatherState.status.isSuccess) {
       _weatherState.value = _weatherState.value.copyWith(
-        temperatureUnits: value,
+        temperatureUnits: units,
       );
       return;
     }
