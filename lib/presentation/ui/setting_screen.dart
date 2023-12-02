@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:weather_app/presentation/models/weather.dart';
 import 'package:weather_app/presentation/stores/weather_store.dart';

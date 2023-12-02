@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:weather_app/presentation/city_search.dart';
 import 'package:weather_app/presentation/stores/weather_state.dart';
@@ -12,11 +11,11 @@ import 'widgets/weather_empty.dart';
 import 'widgets/weather_error.dart';
 import 'widgets/weather_loading.dart';
 
-class HomeScreen extends HookConsumerWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final xCity = useState('');
     return Scaffold(
         appBar: AppBar(

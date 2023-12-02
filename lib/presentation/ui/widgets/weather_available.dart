@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:weather_app/core/repository/models/weather.dart' hide Weather;
 import 'package:weather_app/presentation/models/weather.dart';
 
@@ -46,7 +45,7 @@ class WeatherAvailable extends StatelessWidget {
   }
 }
 
-class LandScapeView extends HookConsumerWidget {
+class LandScapeView extends StatelessWidget {
   const LandScapeView({
     super.key,
     required this.weather,
@@ -57,7 +56,7 @@ class LandScapeView extends HookConsumerWidget {
   final TemperatureUnits units;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
